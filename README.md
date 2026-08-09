@@ -1,43 +1,70 @@
 # trebon-sites
 
-Monorepo for three related Třeboň wellness/wellness websites: masáže, thajské masáže, and ubytování. All share a unified tech stack (static HTML + JS, nginx via Docker, Caddy TLS on VPS) and a common reservation system.
+Monorepo for three Třeboň wellness/wellness websites: masáže, thajské masáže, ubytování. Single nginx container serves all three domains via `server_name` routing. Shared CSS, JS, fonts, and images across the ecosystem.
 
 ## Sites
 
-| Site | Domain | Status |
-|------|--------|--------|
-| **Masáže Jana Tondlová** | www.masaze-trebon.cz | Design spec complete |
-| **Thajské masáže Třeboň** | www.thajskemasaze-trebon.cz | Design spec complete |
-| **U Třeboňské madony** | www.utrebonskemadony.cz | Design spec complete |
+| Site | Directory | Domain | `data-site` |
+|------|-----------|--------|-------------|
+| **Masáže Jana Tondlová** | `masaze/` | www.masaze-trebon.cz | `masaze` |
+| **Thajské masáže Třeboň** | `thai/` | www.thajskemasaze-trebon.cz | `thai` |
+| **U Třeboňské madony** | `penzion/` | www.utrebonskemadony.cz | `penzion` |
 
 ## Tech Stack
 
-- **Frontend:** Static HTML + inline CSS + vanilla JS (zero build step, zero framework)
-- **Server:** nginx:alpine in Docker
-- **TLS:** Caddy on VPS host, reverse-proxying to Docker containers
-- **Booking:** Previo REST API (via nginx reverse proxy)
+- **Frontend:** Static HTML + single shared `css/design-system.css` + vanilla JS (zero build step, zero framework)
+- **Server:** Single `nginx:alpine` container, `server_name` routing to subdirectories
+- **TLS:** Caddy on VPS host, reverse-proxying all three domains to `trebon-sites:80`
+- **Booking:** Previo REST API via nginx reverse proxy (Phase 2), Previó iframe embed (Phase 1)
 - **Languages:** CZ / EN / DE per site
-- **SEO:** Schema.org JSON-LD, hreflang tags, structured data
+- **SEO:** Schema.org JSON-LD, hreflang tags, llms.txt
+- **Design:** `data-site` attribute drives per-domain color theming (Section 2.3 of V5 spec)
 
 ## Architecture
 
 ```
 trebon-sites/
-├── sites/                         # Per-site source code
-│   ├── masaze-trebon/             #   HTML, CSS, JS, Dockerfile, nginx.conf
-│   ├── thajskemasaze-trebon/
-│   └── utrebonskemadony/
-├── shared/                        # Shared infrastructure
-│   ├── docker/                    #   docker-compose.yml, Dockerfile.template
-│   └── nginx/                     #   Shared nginx.conf template
-├── handovers/                     # Relay payloads and completion reports
-│   ├── _relay_template.json       #   Current best template (evolved via learnings)
+├── masaze/                    # masaze-trebon.cz — Classic Wellness JT
+│   ├── index.html
+│   ├── masaze/                # procedure listing
+│   ├── koupele/               # baths
+│   ├── rezervace/
+│   ├── faq/
+│   ├── kontakt/
+│   ├── en/                    # EN mirror
+│   ├── de/                    # DE mirror
+│   ├── robots.txt
+│   ├── sitemap.xml
+│   └── llms.txt
+├── thai/                      # thajskemasaze-trebon.cz — Authentic Thai
+│   └── ...                    # same structure as masaze
+├── penzion/                   # utrebonskemadony.cz — Boutique Hotel
+│   └── ...                    # same structure as masaze + pokoje/ + season matrix
+├── css/
+│   └── design-system.css      # single source of truth (Sections 2–8 of V5 spec)
+├── js/
+│   ├── i18n.js                # translation dictionary
+│   ├── availability.js        # Previo API client (penzion)
+│   ├── booking.js             # jong API client (thai + masaze, Phase 2)
+│   └── main.js                # navigation, language switcher, sheet drawer
+├── img/
+│   ├── logo-penzion.svg       # external SVG, browser-cacheable
+│   ├── logo-thai.svg
+│   ├── logo-masaze.svg
+│   ├── icons/                 # SVG icon library (24×24, currentColor)
+│   └── photos/                # WebP + JPEG fallback
+├── fonts/                     # self-hosted WOFF2, subset Latin+Czech
+├── nginx.conf                 # 3 server blocks, server_name routing
+├── shared.conf                # security headers, cache, API proxies
+├── Dockerfile                 # nginx:alpine, single container
+├── handovers/                 # Relay payloads and completion reports
+│   ├── _relay_template.json
 │   ├── done/
 │   └── archive/
-├── learnings/                     # Per-step subagent observations
-├── AGENTS.md                      # Tiered Relay Architecture v4 protocol
-├── .internal_master_plan.md       # Architect-only plan (gitignored)
-└── devlog.md                      # Subagent activity log (gitignored)
+├── learnings/                 # Per-step subagent observations
+├── AGENTS.md                  # Tiered Relay Architecture v4 protocol
+├── .internal_master_plan.md   # Architect-only plan (gitignored)
+└── devlog.md                  # Subagent activity log (gitignored)
 ```
 
 ## Development Flow
@@ -51,6 +78,15 @@ This project uses the **Tiered Relay Architecture v4** — a plan → delegate �
 
 Full protocol: [`AGENTS.md`](AGENTS.md)
 
+## Design System
+
+See `/opt/data/projects/redesign/NEW_V5_design_specification.md` for the full 1809-line spec covering:
+- Design tokens & CSS custom properties with `data-site` per-domain theming
+- UI component library (cards, price tables, accordion, forms, testimonials)
+- Responsive layout (desktop sidebar → tablet card → mobile slide-up sheet)
+- GEO/AI agent optimization (JSON-LD, llms.txt, E-E-A-T blocks)
+- 6-phase implementation roadmap
+
 ## Infrastructure
 
 ### VPS
@@ -58,14 +94,21 @@ Full protocol: [`AGENTS.md`](AGENTS.md)
 - Host: srv1773137.hstgr.cloud
 - Tailscale IP: 100.120.152.61
 - Docker network: `hermes_caddy-net`
-- Caddy handles TLS termination
+- Caddy handles TLS termination, reverse-proxies to `trebon-sites:80`
 
 ### Local Dev
 
 ```bash
-# Start all three sites
-docker compose -f shared/docker/docker-compose.yml up -d
+# Volume-mount for rapid iteration (no rebuild)
+docker run -d \
+  --name trebon-sites \
+  --restart unless-stopped \
+  --network hermes_caddy-net \
+  -v /opt/data/projects/trebon-sites/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
+  -v /opt/data/projects/trebon-sites/shared.conf:/etc/nginx/conf.d/shared.conf:ro \
+  -v /opt/data/projects/trebon-sites/:/usr/share/nginx/html:ro \
+  nginx:alpine
 
-# Single site
-cd sites/masaze-trebon && docker build -t masaze-trebon . && docker run -p 8080:80 masaze-trebon
+# Or build and run
+docker build -t trebon-sites . && docker run -p 8080:80 trebon-sites
 ```
