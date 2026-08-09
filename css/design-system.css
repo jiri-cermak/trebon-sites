@@ -1,0 +1,374 @@
+/* ============================================================
+   design-system.css — Shared stylesheet for all trebon-sites
+   domains: penzion | thai | masaze
+   Canonical source: NEW_V5_design_specification.md
+   ============================================================ */
+
+/* --- 1. @font-face Declarations (Section 2.5) --- */
+@font-face {
+  font-family: 'PT Serif';
+  src: url('/fonts/pt-serif-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PT Serif';
+  src: url('/fonts/pt-serif-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow Semi Condensed';
+  src: url('/fonts/barlow-semi-condensed-400.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow Semi Condensed';
+  src: url('/fonts/barlow-semi-condensed-600.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Barlow Semi Condensed';
+  src: url('/fonts/barlow-semi-condensed-700.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* --- 2. :root Design Tokens (Section 2.3) --- */
+:root {
+  /* Typography */
+  --font-heading: 'PT Serif', Georgia, serif;
+  --font-body: 'Barlow Semi Condensed', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Shared Neutrals */
+  --color-bg-main: #FAF8F5;
+  --color-text-dark: #23211E;
+  --color-text-muted: #666059;
+  --color-border-light: #E8E2D5;
+  --color-border-dark: #D8D2C5;
+  --color-white: #FFFFFF;
+  --color-gold: #C5A059;
+  --color-success: #2B8A3E;
+  --color-error: #C92A2A;
+  --color-error-bg: #FFF5F5;
+
+  /* DOMAIN 1: utrebonskemadony.cz (Penzion) */
+  --penzion-primary: #D9532F;
+  --penzion-primary-hover: #B83E1E;
+  --penzion-secondary: #E89A24;
+  --penzion-accent-green: #3A6B52;
+  --penzion-card-bg: #FDF4ED;
+  --penzion-border: #F2D5C4;
+
+  /* DOMAIN 2: thajskemasaze-trebon.cz (Thai Spa) */
+  --thai-primary: #8B123E;
+  --thai-primary-hover: #6E0E31;
+  --thai-secondary: #D4AF37;
+  --thai-accent-subtle: #6D1B48;
+  --thai-card-bg: #FAF4F6;
+  --thai-border: #EAD1DC;
+
+  /* DOMAIN 3: masaze-trebon.cz (Classic Wellness JT) */
+  --masaze-primary: #D86C45;
+  --masaze-primary-hover: #B7522D;
+  --masaze-secondary: #8C2424;
+  --masaze-card-bg: #FAF0EC;
+  --masaze-border: #EED7CE;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+
+  /* Border Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+/* --- 3. [data-site] Alias Blocks (Section 2.3) --- */
+[data-site="penzion"] {
+  --domain-primary: var(--penzion-primary);
+  --domain-primary-hover: var(--penzion-primary-hover);
+  --domain-secondary: var(--penzion-secondary);
+  --domain-card-bg: var(--penzion-card-bg);
+  --domain-border: var(--penzion-border);
+}
+[data-site="thai"] {
+  --domain-primary: var(--thai-primary);
+  --domain-primary-hover: var(--thai-primary-hover);
+  --domain-secondary: var(--thai-secondary);
+  --domain-card-bg: var(--thai-card-bg);
+  --domain-border: var(--thai-border);
+}
+[data-site="masaze"] {
+  --domain-primary: var(--masaze-primary);
+  --domain-primary-hover: var(--masaze-primary-hover);
+  --domain-secondary: var(--masaze-secondary);
+  --domain-card-bg: var(--masaze-card-bg);
+  --domain-border: var(--masaze-border);
+}
+
+/* --- 4. Component CSS --- */
+
+/* 4.1 Buttons (Section 4.6) */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 48px; padding: 0 24px; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-weight: 700; font-size: 1rem;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.btn-primary { background: var(--domain-primary); color: var(--color-white); }
+.btn-primary:hover { background: var(--domain-primary-hover); }
+.btn-primary:active { transform: translateY(1px); }
+.btn-secondary {
+  background: transparent; color: var(--domain-primary);
+  border: 1.5px solid var(--domain-primary);
+}
+.btn-secondary:hover { background: var(--domain-card-bg); }
+
+/* 4.2 Badges (Section 4.6) */
+.badge-wrapper { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.badge {
+  display: inline-block; padding: 4px 12px; border-radius: var(--radius-full);
+  font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
+}
+.badge-primary { background: var(--domain-primary); color: var(--color-white); }
+.badge-secondary {
+  background: var(--domain-card-bg); color: var(--domain-primary);
+  border: 1px solid var(--domain-border);
+}
+.cross-perk-badge {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
+  font-size: 0.82rem; font-weight: 600; color: var(--color-success);
+}
+
+/* 4.3 Price Box / Table (Section 4.6) */
+.price-box { margin: 16px 0; }
+.price-amount {
+  font-family: var(--font-heading); font-size: 1.6rem; font-weight: 700;
+  color: var(--domain-primary);
+}
+.price-amount span {
+  font-family: var(--font-body); font-size: 0.9rem; font-weight: 400;
+  color: var(--color-text-muted);
+}
+.price-table { width: 100%; border-collapse: collapse; }
+.price-table th {
+  text-align: left; padding: 12px; font-size: 0.85rem; text-transform: uppercase;
+  color: var(--color-text-muted); border-bottom: 2px solid var(--color-border-light);
+}
+.price-table td {
+  padding: 14px 12px; border-bottom: 1px solid var(--color-border-light);
+  vertical-align: top;
+}
+
+/* 4.4 Cards (Section 4.6) */
+.card {
+  background: var(--color-white); border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.card-body { padding: 20px; }
+.brand-bar {
+  display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+  background: var(--domain-card-bg);
+}
+.brand-bar img { width: 40px; height: 40px; flex-shrink: 0; }
+.brand-info span {
+  display: block; font-size: 0.8rem; color: var(--color-text-muted);
+}
+
+/* 4.5 Accordion (Section 4.6) */
+.accordion-item { border-bottom: 1px solid var(--color-border-light); }
+.accordion-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 4px; cursor: pointer; font-weight: 700; list-style: none;
+}
+.accordion-header::-webkit-details-marker { display: none; }
+.accordion-icon { color: var(--domain-primary); font-size: 1.3rem; line-height: 1; }
+.accordion-item[open] .accordion-icon { transform: rotate(45deg); }
+.accordion-content { padding: 0 4px 16px; color: var(--color-text-muted); }
+
+/* 4.6 Safety / Callout Box (Section 4.6) */
+.safety-box { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 24px 0; }
+@media (min-width: 768px) { .safety-box { grid-template-columns: 1fr 1fr; } }
+.callout-indication, .callout-contraindication { padding: 16px; border-radius: var(--radius-md); }
+.callout-indication { background: #F0F7F2; border: 1px solid #C7E0CE; }
+.callout-contraindication { background: var(--color-error-bg); border: 1px solid #F3C6C6; }
+.callout-title { font-weight: 700; margin-bottom: 8px; }
+.callout-list { padding-left: 18px; }
+.callout-list li { margin-bottom: 4px; }
+
+/* 4.7 Testimonial Card (Section 4.6) */
+.testimonial-card {
+  background: var(--domain-card-bg);
+  border-left: 3px solid var(--domain-primary);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  margin: 0;
+}
+.testimonial-quote {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--color-text-dark);
+  margin-bottom: 12px;
+}
+.testimonial-author { display: flex; flex-direction: column; }
+.testimonial-name { font-weight: 700; font-size: 0.9rem; }
+.testimonial-meta { font-size: 0.82rem; color: var(--color-text-muted); }
+
+/* 4.8 Bio Card (E-E-A-T) (Section 4.6) */
+.bio-card {
+  display: flex; gap: 16px; align-items: flex-start; padding: 20px;
+  background: var(--domain-card-bg); border-radius: var(--radius-md);
+}
+.avatar-circle {
+  width: 56px; height: 56px; border-radius: 50%; background: var(--domain-primary);
+  color: var(--color-white); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading); font-weight: 700; flex-shrink: 0; font-size: 1.1rem;
+}
+.bio-card h4 { font-family: var(--font-heading); }
+.bio-card .role {
+  color: var(--domain-primary); font-weight: 600; font-size: 0.9rem; margin: 2px 0 6px;
+}
+.bio-card .desc { color: var(--color-text-muted); font-size: 0.95rem; }
+
+/* --- 5. Form Controls (Section 5.1) --- */
+.form-group {
+  display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;
+}
+.form-label {
+  font-family: var(--font-body); font-size: 0.88rem; font-weight: 700;
+  color: var(--color-text-dark);
+}
+.form-control {
+  width: 100%; height: 48px; padding: 0 14px;
+  background-color: var(--color-white); border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm); font-family: var(--font-body);
+  font-size: 1rem; color: var(--color-text-dark);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.form-control:focus {
+  outline: none; border-color: var(--domain-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--domain-primary) 20%, transparent);
+}
+.form-control.is-invalid {
+  border-color: var(--color-error);
+  background-color: var(--color-error-bg);
+}
+.field-error-msg {
+  font-size: 0.85rem; font-weight: 600; color: var(--color-error);
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* --- 6. Synergy Bar Navigation (Section 6.1) --- */
+.synergy-bar {
+  background-color: var(--color-text-dark);
+  color: #E8E2D5;
+  font-size: 0.82rem;
+  padding: 6px 0;
+}
+.synergy-container {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.synergy-links { display: flex; gap: 16px; }
+.synergy-link {
+  color: #D8CEBD; text-decoration: none; font-weight: 600;
+  transition: color 0.15s ease;
+}
+.synergy-link:hover,
+.synergy-link.is-active { color: var(--color-white); }
+
+/* --- 7. Accessibility (Section 8.1) --- */
+:focus-visible {
+  outline: 3px solid var(--domain-primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- 8. Responsive Layout (Section 9.2) --- */
+*, *::before, *::after { box-sizing: border-box; }
+.container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 16px; }
+.page-wrapper { padding: 24px 0 100px 0; }
+@media (min-width: 992px) { .page-wrapper { padding: 40px 0; } }
+
+.layout-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+@media (min-width: 992px) { .layout-grid { grid-template-columns: 1fr 380px; } }
+
+/* Tablet sidebar card (768–991px) */
+.tablet-sidebar-card { display: none; }
+@media (min-width: 768px) and (max-width: 991px) {
+  .tablet-sidebar-card {
+    display: block; background: var(--color-white);
+    border: 1px solid var(--color-border-light); border-radius: var(--radius-md);
+    padding: 24px; margin-top: 24px; box-shadow: var(--shadow-sm);
+  }
+  .mobile-bottom-bar { display: none; }
+}
+
+/* Desktop sidebar (992px+) */
+.desktop-sidebar { display: none; }
+@media (min-width: 992px) {
+  .desktop-sidebar { display: block; }
+  .booking-card {
+    position: sticky; top: 88px; background: var(--color-white);
+    border: 1px solid var(--color-border-light); border-radius: var(--radius-md);
+    padding: 24px; box-shadow: var(--shadow-md);
+  }
+}
+
+/* Mobile bottom bar (< 768px) */
+.mobile-bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--color-white); border-top: 1px solid var(--color-border-light);
+  padding: 12px 16px; display: flex; align-items: center;
+  justify-content: space-between; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+}
+@media (min-width: 768px) { .mobile-bottom-bar { display: none; } }
+
+/* Mobile slide-up drawer */
+.mobile-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 200;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+.mobile-modal-overlay.is-active { opacity: 1; pointer-events: auto; }
+.mobile-sheet {
+  position: fixed; bottom: -100%; left: 0; right: 0; z-index: 201;
+  background: var(--color-white); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 24px 20px 32px 20px;
+  transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-sheet.is-active { bottom: 0; }
+
+/* --- 9. Season Matrix Table (Section 10.5.5) --- */
+.price-caveat {
+  font-size: 0.85rem; color: var(--color-text-muted); margin-top: 8px;
+}
+.season-matrix th { background: var(--domain-card-bg); }
+
+/* --- 10. Punzen/base styles --- */
+body {
+  margin: 0; padding: 0;
+  background-color: var(--color-bg-main);
+  font-family: var(--font-body);
+  color: var(--color-text-dark);
+  line-height: 1.5;
+}
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
