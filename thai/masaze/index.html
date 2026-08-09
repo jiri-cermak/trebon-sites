@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="cs" data-site="thai">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Naše masáže — ceník a procedury | thajskemasaze-trebon.cz</title>
+  <meta name="description" content="Přehled thajských masáží v Třeboni — tradiční thajská masáž, olejová masáž, masáž lávovými kameny, exotické rituály. Ceník 30–90 min od 590 Kč. Rezervace: +420 737 538 818.">
+  <link rel="stylesheet" href="/css/design-system.css">
+
+  <!-- ============================================================
+       STEP-05 page layout — thai procedure listing (hero, pricing
+       banner, detailed procedure cards, safety box). Design tokens
+       + components come from /css/design-system.css; page layout
+       lives here until Phase C extracts common patterns into
+       css/layout.css.
+       ============================================================ -->
+  <style>
+    /* --- Header --- */
+    .site-header {
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .header-inner {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+    }
+    .header-logo { width: 52px; height: 52px; flex-shrink: 0; }
+    .header-title {
+      font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700;
+      color: var(--domain-primary); margin: 0; line-height: 1.2;
+    }
+    .header-title span { color: var(--domain-secondary); }
+    .header-tagline {
+      margin: 2px 0 0; font-size: 0.85rem; color: var(--color-text-muted);
+    }
+
+    /* --- Page hero (static, no carousel) --- */
+    .page-hero {
+      position: relative; overflow: hidden;
+      height: clamp(300px, 46vh, 440px);
+      background: var(--color-text-dark);
+    }
+    .page-hero-bg {
+      position: absolute; inset: 0;
+      background-image: url("/img/photos/medium/156_medium.jpg");
+      background-size: cover; background-position: center;
+    }
+    .page-hero .hero-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; color: var(--color-white);
+      background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.5) 100%);
+      padding: 24px;
+    }
+    .page-hero h1 {
+      color: var(--color-white); margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+    }
+    .page-hero .hero-subtitle {
+      margin: 0; font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+      letter-spacing: 0.02em; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+    }
+
+    /* --- Sections --- */
+    .section { padding: 40px 0; }
+    .section + .section { padding-top: 0; }
+    .section h2 { color: var(--domain-primary); margin: 0 0 6px; font-size: 1.7rem; }
+    .section-sub { color: var(--color-text-muted); margin: 0 0 26px; max-width: 720px; }
+
+    /* --- Pricing banner --- */
+    .pricing-banner {
+      background: var(--domain-card-bg);
+      border: 1px solid var(--domain-border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    .pricing-banner h3 {
+      color: var(--domain-primary); font-size: 1.15rem; margin: 0 0 4px;
+    }
+    .pricing-banner .banner-note {
+      color: var(--color-text-muted); font-size: 0.9rem; margin: 0 0 16px;
+    }
+    .pricing-banner .price-table th { color: var(--color-text-muted); }
+    .pricing-banner .price-table td { color: var(--color-text-dark); }
+    .pricing-banner .price-amount {
+      font-family: var(--font-heading); font-weight: 700;
+      color: var(--domain-primary);
+    }
+
+    /* --- Procedure cards --- */
+    .card-grid {
+      display: grid; grid-template-columns: 1fr; gap: 20px;
+    }
+    @media (min-width: 768px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+    .procedure-card { display: flex; flex-direction: column; }
+    .procedure-card .card-body { display: flex; flex-direction: column; flex: 1; }
+    .procedure-card h3 { font-size: 1.12rem; margin: 0 0 8px; }
+    .procedure-card .card-desc {
+      color: var(--color-text-muted); font-size: 0.95rem; margin: 0 0 14px;
+    }
+    .procedure-card .price-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 8px 0; border-bottom: 1px dashed var(--color-border-light);
+      font-size: 0.95rem;
+    }
+    .procedure-card .price-row:last-of-type { border-bottom: 0; }
+    .procedure-card .price-row strong { color: var(--domain-primary); font-size: 1.02rem; }
+    .exotic-card { border-top: 3px solid var(--domain-secondary); }
+    .card-cta { margin-top: 16px; width: 100%; }
+    .price-note { font-size: 0.85rem; color: var(--color-text-muted); margin-top: 24px; }
+
+    /* --- Safety box --- */
+    .safety-section h2 { margin-bottom: 6px; }
+    .callout-title { color: var(--color-text-dark); }
+
+    /* --- Footer --- */
+    .site-footer {
+      background: var(--color-text-dark); color: #E8E2D5;
+      margin-top: 64px; padding: 44px 0 28px;
+    }
+    .site-footer h3 { color: var(--color-white); font-size: 1.05rem; margin: 0 0 14px; }
+    .site-footer ul { list-style: none; margin: 0; padding: 0; }
+    .site-footer li { padding: 5px 0; font-size: 0.95rem; }
+    .site-footer a { color: #D8CEBD; text-decoration: none; }
+    .site-footer a:hover { color: var(--color-white); text-decoration: underline; }
+    .footer-grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+    @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      margin-top: 28px; padding-top: 16px;
+      font-size: 0.85rem; color: #B9AFA0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Synergy strip (Section 6.1) -->
+  <nav class="synergy-bar" aria-label="Sesterské weby">
+    <div class="container synergy-container">
+      <span class="synergy-brand">Třeboň · wellness a masáže</span>
+      <div class="synergy-links">
+        <a class="synergy-link" href="https://utrebonskemadony.cz">Penzion U Třeboňské madony</a>
+        <a class="synergy-link is-active" href="https://thajskemasaze-trebon.cz" aria-current="page">Thajské masáže Třeboň</a>
+        <a class="synergy-link" href="https://masaze-trebon.cz">Masáže Třeboň</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <img src="/img/garuda.png" alt="Thajské masáže Třeboň" class="header-logo">
+      <div>
+        <p class="header-title">Thajské masáže <span>Třeboň</span></p>
+        <p class="header-tagline">Tradiční thajské procedury v srdci jižních Čech</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page hero -->
+  <section class="page-hero" aria-label="Naše masáže">
+    <div class="page-hero-bg" role="img" aria-label="Relaxační thajská procedura — masáž"></div>
+    <div class="hero-overlay">
+      <h1>Naše masáže</h1>
+      <p class="hero-subtitle">Vyberte si z široké nabídky thajských masáží</p>
+    </div>
+  </section>
+
+  <main class="page-wrapper">
+
+    <!-- Pricing banner -->
+    <section class="section" id="cenik">
+      <div class="container">
+        <h2>Ceník</h2>
+        <p class="section-sub">Ceny jsou jednotné pro všechny core procedury níže — platíte pouze za délku procedury.</p>
+
+        <div class="pricing-banner">
+          <h3>Časový ceník masáží</h3>
+          <p class="banner-note">Všechny core procedury (tradiční, olejová, masáž zad, obličeje, lávové kameny, reflexní) za jednotnou cenu.</p>
+          <table class="price-table">
+            <thead>
+              <tr><th>Délka procedury</th><th>Cena</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>30 minut</td><td><strong class="price-amount">590 Kč</strong></td></tr>
+              <tr><td>45 minut</td><td><strong class="price-amount">830 Kč</strong></td></tr>
+              <tr><td>60 minut</td><td><strong class="price-amount">1 100 Kč</strong></td></tr>
+              <tr><td>90 minut</td><td><strong class="price-amount">1 600 Kč</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core procedures -->
+    <section class="section" id="core">
+      <div class="container">
+        <h2>Core procedury</h2>
+        <p class="section-sub">Klasické thajské masáže prováděné školenými terapeuty — vyberte si délku a my se postaráme o zbytek.</p>
+
+        <div class="card-grid">
+          <article class="card procedure-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">60 / 90 min</span></div>
+              <h3>Tradiční thajská masáž</h3>
+              <p class="card-desc">Intenzivní protažení a práce s energetickými liniemi pro uvolnění celého těla bez použití olejů.</p>
+              <div class="price-row"><span>60 min</span><strong>1 100 Kč</strong></div>
+              <div class="price-row"><span>90 min</span><strong>1 600 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">60 / 90 min</span></div>
+              <h3>Thajská olejová masáž</h3>
+              <p class="card-desc">Spojení relaxační masáže s aromaterapií, která využívá vzácné thajské byliny a esenciální oleje.</p>
+              <div class="price-row"><span>60 min</span><strong>1 100 Kč</strong></div>
+              <div class="price-row"><span>90 min</span><strong>1 600 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">30 / 45 min</span></div>
+              <h3>Thajská masáž zad a šíje</h3>
+              <p class="card-desc">Cílená úleva pro ty, kteří tráví dlouhé hodiny u počítače. Rychlá pomoc od ztuhlosti.</p>
+              <div class="price-row"><span>30 min</span><strong>590 Kč</strong></div>
+              <div class="price-row"><span>45 min</span><strong>830 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">30 / 45 min</span></div>
+              <h3>Masáž obličeje a hlavy</h3>
+              <p class="card-desc">Jemná masáž uvolňující napětí v obličejových svalech a pokožce hlavy.</p>
+              <div class="price-row"><span>30 min</span><strong>590 Kč</strong></div>
+              <div class="price-row"><span>45 min</span><strong>830 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">60 / 90 min</span></div>
+              <h3>Masáž lávovými kameny</h3>
+              <p class="card-desc">Hloubkové prohřátí svalů a detoxikace organismu pomocí horkých lávových kamenů.</p>
+              <div class="price-row"><span>60 min</span><strong>1 100 Kč</strong></div>
+              <div class="price-row"><span>90 min</span><strong>1 600 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">30 / 45 min</span></div>
+              <h3>Reflexní masáž chodidel</h3>
+              <p class="card-desc">Stimulace tlakových bodů na chodidlech, která příznivě ovlivňuje celý organismus.</p>
+              <div class="price-row"><span>30 min</span><strong>590 Kč</strong></div>
+              <div class="price-row"><span>45 min</span><strong>830 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Exotic rituals -->
+    <section class="section" id="exotic">
+      <div class="container">
+        <h2>Exotické rituály</h2>
+        <p class="section-sub">Speciální zážitkové procedury s individuálním ceníkem — ideální jako dárek či rituál pro dva.</p>
+
+        <div class="card-grid">
+          <article class="card procedure-card exotic-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">60 min</span></div>
+              <h3>Bylinné měšce</h3>
+              <!-- TEMPORARY TEXT — will be polished later -->
+              <p class="card-desc">Nahřáté měšce plněné thajskými bylinami se přikládají na tělo a prohřívají ho do hloubky. Kombinace tepla, tlaku a vůní bylin uvolňuje svalové napětí a podporuje prokrvení.</p>
+              <div class="price-row"><span>60 min</span><strong>1 400 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card exotic-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">30 min</span></div>
+              <h3>Indická masáž hlavy</h3>
+              <!-- TEMPORARY TEXT — will be polished later -->
+              <p class="card-desc">Jemný rituál vycházející z ajurvédské tradice. Pracuje s tlakovými body na hlavě, krku a ramenou, uvolňuje mysl a navozuje hluboký klid.</p>
+              <div class="price-row"><span>30 min</span><strong>590 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card exotic-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">60 / 90 min</span></div>
+              <h3>Lomi Lomi</h3>
+              <!-- TEMPORARY TEXT — will be polished later -->
+              <p class="card-desc">Havajská rituální masáž celého těla s dlouhými plynulými pohyby dlaní a předloktí. Podporuje hlubokou relaxaci a obnovu přirozené energie těla.</p>
+              <div class="price-row"><span>60 min</span><strong>1 100 Kč</strong></div>
+              <div class="price-row"><span>90 min</span><strong>1 600 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card exotic-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">60 / 90 min</span></div>
+              <h3>Čokoládové pokušení</h3>
+              <!-- TEMPORARY TEXT — will be polished later -->
+              <p class="card-desc">Sladký rituál, při kterém je tělo ošetřeno hřejivou čokoládovou směsí. Pokožku hydratuje, vyživuje a zanechává ji jemnou jako samet.</p>
+              <div class="price-row"><span>60 min</span><strong>1 100 Kč</strong></div>
+              <div class="price-row"><span>90 min</span><strong>1 600 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+
+          <article class="card procedure-card exotic-card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">120 min</span></div>
+              <h3>Tokoriki</h3>
+              <!-- TEMPORARY TEXT — will be polished later -->
+              <p class="card-desc">Exkluzivní čtyřruční rituál, při kterém dva terapeuti pracují v naprosté synchronizaci. Dvě hodiny naprostého odevzdání pro tělo i duši.</p>
+              <div class="price-row"><span>120 min</span><strong>2 300 Kč</strong></div>
+              <a class="btn btn-primary card-cta" href="/rezervace/">Rezervovat</a>
+            </div>
+          </article>
+        </div>
+
+        <p class="price-note">Ceny jsou platné k datu zveřejnění. Uvedené časy zahrnují samotnou proceduru; individuální přání a dárkové poukazy konzultujte prosím telefonicky.</p>
+      </div>
+    </section>
+
+    <!-- Safety -->
+    <section class="section safety-section" id="bezpecnost">
+      <div class="container">
+        <h2>Bezpečnost a příprava</h2>
+        <p class="section-sub">Aby byla vaše masáž příjemná a bezpečná, připravili jsme pár doporučení před procedurou a informace, kdy masáž raději odložit.</p>
+
+        <div class="safety-box">
+          <div class="callout-indication">
+            <p class="callout-title">✓ Před masáží</p>
+            <ul class="callout-list">
+              <li>Osprchujte se — čistá pokožka je základem příjemné procedury</li>
+              <li>Před masáží nejezte těžká jídla</li>
+              <li>Sejměte šperky, hodinky a další doplňky</li>
+              <li>Nahlaste terapeutovi případné alergie a zdravotní potíže</li>
+            </ul>
+          </div>
+          <div class="callout-contraindication">
+            <p class="callout-title">⚠️ Masáž není vhodná při</p>
+            <ul class="callout-list">
+              <li>chřipce, nachlazení a zvýšené teplotě</li>
+              <li>akutních zánětech v těle</li>
+              <li>křečových žilách</li>
+              <li>kožních vyrážkách a poraněních</li>
+              <li>nádorových onemocněních</li>
+              <li>těsně po jídle</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Kontakt</h3>
+          <ul>
+            <li>📞 <a href="tel:+420****8818">+420 737 538 818</a></li>
+            <li>✉️ <a href="mailto:penzionutrebonskemadony@gmail.com">penzionutrebonskemadony@gmail.com</a></li>
+            <li>📍 Husova 68, 379 01 Třeboň</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Provozní doba</h3>
+          <ul>
+            <li>🕐 Po–So 9–20</li>
+            <li>Pondělí–sobota od 9 do 20 hodin</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        🏢 Penzion U Třeboňské madony, s.r.o. · IČ 09787780
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
