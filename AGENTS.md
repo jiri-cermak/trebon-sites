@@ -6,10 +6,11 @@ You are the Master Architect. You plan, delegate, and verify. You do NOT write f
 
 Before any work occurs, initialize workspace isolation and verify project readiness:
 
-- **Isolate State Files:** Check if `.git/info/exclude` contains internal tracking patterns. If not, immediately append `.internal_master_plan.md`, `relay_payload_*.json`, `retry_context.json`, `devlog.md`, `handovers/`, and `learnings/` to `.git/info/exclude`. This ensures subagent workspace sweeps (`git add -A`) never see or commit internal state architecture.
+- **Isolate State Files:** Check if `.git/info/exclude` contains internal tracking patterns. If not, immediately append `.internal_master_plan.md`, `retry_context.json`, `devlog.md`, `handovers/`, and `learnings/` to `.git/info/exclude`. This ensures subagent workspace sweeps (`git add -A`) never see or commit internal state architecture.
 - Does a git repo exist at the project root? If not → escalate to user: "No git repo found. Initialize one before delegating."
 - Does a working environment exist (venv/node_modules/etc.)? If not → escalate: "No environment found. Set up the project before delegating."
-- Does `handovers/_relay_template.json` exist? If not → copy from `_bootstrap/_relay_template.json` and adjust `workdir` and `constraints` to match the project.
+- Does `handovers/_relay_context_template.md` exist? If not → copy from `_bootstrap/_relay_context_template.md` and adjust to match the project.
+- Does `.git/info/exclude` exclude `handovers/` and `learnings/`? Handover reports and observations are Architect-side state — never committed.
 
 ## Core Principles
 
@@ -51,7 +52,7 @@ Write or update `.internal_master_plan.md`. Never expose this planning layer to 
 Restrict task scale to ≤30 minutes per step. Split larger units immediately.
 If requirements shift mid-execution: pause the current loop step, rewrite the master plan, and resume.
 
-## Phase 2: Write the Relay
+## Phase 2: Write the Relay — Direct Context
 
 Execute sequentially. Step N+1 remains locked until Step N satisfies all Phase 4 verification protocols.
 
@@ -67,35 +68,70 @@ mkdir -p handovers/done handovers/archive
 
 If `git status` displays dirty uncommitted code changes from prior feature sessions, resolve or commit them before delegating.
 
-### 2b. Write handovers/relay_payload_{TASK_ID}.json
+### 2b. Construct the `delegate_task` Context
 
-**Start from the current template:** `handovers/_relay_template.json` — the living, environment-tested baseline encoding all accumulated learnings. Evolve it as new patterns emerge via `learnings/*.md`.
+**No JSON relay files.** All instructions go directly into `delegate_task`'s `goal` and `context` parameters. This eliminates the `execute_code` approval gate that triggers when subagents parse JSON from disk, and removes the round-trip file read latency (~5s observed in Phase A).
 
-Construct a deterministic JSON payload for the subagent, scoped strictly to the Task ID. Evaluate tactical complexity to assign the correct reasoning profile:
+Start from `handovers/_relay_context_template.md` — the living, environment-tested baseline.
+
+**`goal`** — one sentence: what the subagent must produce. Self-contained, no project shorthand.
+
+**`context`** — structured Markdown covering:
+
+```markdown
+**Project:** trebon-sites at /opt/data/projects/trebon-sites
+**Task ID:** STEP-NN
+**Profile:** thinking_type: disabled | enabled, reasoning_effort: null | high
+
+## Task
+[Self-contained description. What to create/modify. No "as discussed."]
+
+## Target Files
+- `/opt/data/projects/trebon-sites/PATH` — create | modify
+
+## Constraints
+**Study:** [files to read for conventions]
+**Do NOT touch:** [list of protected files]
+**Boundaries:** [library limits — no npm, no frameworks, no pip, no apt]
+
+## Testing Methodology
+[Verbatim shell commands. Must include ≥1 negative test + ≥1 structural assertion.
+ ALL hex/file/archive operations use Python stdlib, not xxd/od/unzip/file.
+ Docker is UNAVAILABLE — use python3 -m http.server for web validation.]
+
+## Stop Conditions
+[Explicit halt commands for known dead ends]
+
+## Handover
+Write to: `handovers/done/completion-STEP-NN.md`
+Contract: 5 sections (§A): raw test output, git evidence, files table, surprises checklist (§B), contract enforcement.
+
+## Commit
+Use the EOF pattern:
+```
+git commit -F - << 'EOF'
+STEP-NN: short description
+EOF
+```
+Avoid raw IPs/URLs in commit messages.
+```
+
+### 2c. Execution Profile Selector
+
+Evaluate tactical complexity:
 
 - **`thinking_type: "disabled"`** — mechanical changes: boilerplate, templates, formatting.
-- **`thinking_type: "enabled", reasoning_effort: "high"`** — complex logic: algorithms, state transforms, multi-file dependency flows.
-
-### All Tiers (Required Fields):
-- `tier`, `task_id`, `task_description`, `target_files` (with absolute paths and `create`/`modify` action)
-- `testing_methodology`: verbatim shell commands, ≥1 negative test + ≥1 structural shape assertion
-- `handover_file`: path to completion report
-
-### Standard Tier (Append):
-- `constraints`: files to study, files NOT to touch, library boundaries
-- `shape_contract`: precise structural schemas, no pseudocode
-- `surprises_checklist`: 5 standard questions
-
-### Full Tier (Append):
-- `shared_resource_contract`, `stop_conditions`, `pre_flight_command`
+- **`thinking_type: "enabled"`, `reasoning_effort: "high"`** — complex logic: algorithms, state transforms, multi-file dependency flows.
 
 ## Phase 3: Delegate
 
-Invoke via `delegate_task`:
+Invoke via `delegate_task` with the structured `goal` + `context` from Phase 2b:
 
-**goal:** "Read and execute the configuration layer payload inside `handovers/relay_payload_{TASK_ID}.json`. Verify structural progress using the exact `testing_methodology` commands. Construct a compliant handover report matching the Completion File Contract (§A). Do NOT open or inspect unlisted architecture logs."
+**goal:** "TASK_ID: one-sentence deliverable description. Verify with testing methodology. Handover to handovers/done/completion-TASK_ID.md."
 
-**context:** "Boundaries: (1) Read ONLY the provided JSON payload. (2) Execute `testing_methodology` verbatim — capture raw terminal output, never summarize. (3) Commit via the EOF pattern. (4) Fill out the surprises checklist honestly."
+**context:** [The full Markdown context block from Phase 2b — task, targets, constraints, tests, stops, handover contract.]
+
+Batch independent steps (no shared targets) as a `tasks` array. Steps with dependencies run sequentially.
 
 ## Phase 4: Verify
 
@@ -151,11 +187,34 @@ Review discoveries, tighten subsequent step payloads.
 ## Reference §C: Internal Workspace Layout
 
 ```
-{project_root}/handovers/relay_payload_{TASK_ID}.json       ← Architect configuration payload
-{project_root}/handovers/_relay_template.json                ← Current best template
-{project_root}/handovers/done/completion-{TASK_ID}.md        ← Subagent verification report
-{project_root}/handovers/archive/                            ← Archived historical context
+{project_root}/handovers/_relay_context_template.md      ← Current best context template (Markdown)
+{project_root}/handovers/done/completion-{TASK_ID}.md    ← Subagent verification report
+{project_root}/handovers/archive/                        ← Archived historical context
 {project_root}/learnings/{TASK_ID}-agent-loop-observations.md ← Per-step analysis
-{project_root}/.internal_master_plan.md                      ← Architect-only plan
-{project_root}/devlog.md                                     ← Subagent activity log
+{project_root}/.internal_master_plan.md                  ← Architect-only plan
+{project_root}/devlog.md                                 ← Subagent activity log
+{project_root}/scripts/validate-nginx.py                 ← Nginx config structural validator
 ```
+
+## Reference §D: Python Stdlib Mandate
+
+The subagent container lacks common shell tools (`xxd`, `od`, `unzip`, `file`, `jq`, `sed`, `awk`, `stat`, `md5sum`, `diff`, `find`, `sort`, `head`, `tail`, `cut`, `tar`, `gzip`). Python 3 stdlib covers all of them. **All testing methodology and verification commands must use Python, not shell tools.**
+
+| Shell tool | Python replacement |
+|---|---|
+| `xxd`, `od`, `hexdump` | `open(f,'rb').read(N).hex()` |
+| `unzip` | `zipfile.ZipFile(f).extractall()` |
+| `file` (type detection) | `open(f,'rb').read(4)` — magic bytes |
+| `jq` (JSON queries) | `json.load(open(f))` |
+| `sed`, `awk` (text processing) | `re.sub()`, `str.replace()`, `split()` |
+| `wc -l/-c` (line/byte counts) | `len(open(f).readlines())`, `os.path.getsize()` |
+| `stat`, `ls -l` (file metadata) | `os.stat()`, `os.path.getsize()` |
+| `md5sum`, `sha256sum` (checksums) | `hashlib.md5()`, `hashlib.sha256()` |
+| `diff` (file comparison) | `difflib.unified_diff()` |
+| `find` (file search) | `os.walk()`, `glob.glob()` |
+| `sort`, `uniq` | `sorted()`, `set()` |
+| `head -N`, `tail -N` | `lines[:N]`, `lines[-N:]` |
+| `tar`, `gzip`, `bzip2` | `tarfile`, `gzip`, `bz2` |
+| `grep` (pattern matching) | `re.search()` (prefer `search_files` tool or `grep` via terminal — grep IS available) |
+
+**Rule in testing methodology:** never write `xxd`, `od`, `unzip`, or `file` in test commands. Always use the Python equivalent. This eliminates 3 dead-end recovery patterns observed in Phase A (STEP-01: `xxd`→`od`, `unzip`→`zipfile`; STEP-03: `file`→`magic bytes`).
