@@ -58,25 +58,29 @@ trebon-sites/
 ├── shared.conf                # security headers, cache, API proxies
 ├── Dockerfile                 # nginx:alpine, single container
 ├── handovers/                 # Relay payloads and completion reports
-│   ├── _relay_template.json
+│   ├── _relay_context_template.md
 │   ├── done/
 │   └── archive/
 ├── learnings/                 # Per-step subagent observations
-├── AGENTS.md                  # Tiered Relay Architecture v4 protocol
+├── CORE_PROTOCOL.md           # Project-agnostic Tiered Relay Architecture v6 core
+├── AGENTS.md                  # trebon-sites v6 project adapter
 ├── .internal_master_plan.md   # Architect-only plan (gitignored)
 └── devlog.md                  # Subagent activity log (gitignored)
 ```
 
 ## Development Flow
 
-This project uses the **Tiered Relay Architecture v4** — a plan → delegate → verify loop where the Master Architect (Hermes) plans and verifies, and subagents execute code changes.
+This project uses **Tiered Relay Architecture v6**: a project-agnostic core plus a trebon-sites adapter. The Master Architect plans and verifies; subagents execute narrowly scoped code changes.
 
 1. **Plan** — update `.internal_master_plan.md` with step breakdown
-2. **Delegate** — write JSON relay payload, dispatch to subagent via `delegate_task`
-3. **Verify** — re-execute tests independently, audit handover, gate decision
-4. **Learn** — record observations in `learnings/`, evolve `_relay_template.json`
+2. **Relay** — build direct Markdown context from `handovers/_relay_context_template.md`
+3. **Delegate** — dispatch the context to a subagent via `delegate_task`
+4. **Verify** — re-execute tests independently, audit handover, apply gate decision
+5. **Learn** — record and classify observations in `learnings/`; promote only genuinely core rules
 
-Full protocol: [`AGENTS.md`](AGENTS.md)
+Core protocol: [`CORE_PROTOCOL.md`](CORE_PROTOCOL.md)
+
+Project adapter: [`AGENTS.md`](AGENTS.md)
 
 ## Design System
 

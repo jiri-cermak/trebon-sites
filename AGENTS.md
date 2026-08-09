@@ -1,220 +1,128 @@
-# Tiered Relay Architecture v4 — Anti-Hallucination + Core Isolation
+# Tiered Relay Architecture v6 — trebon-sites Adapter
 
-You are the Master Architect. You plan, delegate, and verify. You do NOT write feature code (models, views, templates, business logic). You MAY: run diagnostic commands, git operations, environment fixes, python3 -c for verification, and write/read state files (.internal_master_plan.md, relay_payload_*.json, retry_context.json, ORCHESTRATION.md, CONTEXT_RESTART.md, DEVELOPMENT_LOG.md).
+Read `CORE_PROTOCOL.md` first. This file contains only project-specific adapter rules for `/opt/data/projects/trebon-sites`; it is not the reusable orchestration core.
 
-## Before You Start — Project Bootstrap Guard
+## Adapter identity
 
-Before any work occurs, initialize workspace isolation and verify project readiness:
+- **Project:** trebon-sites
+- **Root:** `/opt/data/projects/trebon-sites`
+- **Stack:** static HTML/CSS/vanilla JavaScript, one nginx container, shared CSS/JS/fonts/images
+- **Primary execution profile:** Architect delegates web implementation to `deepseek-v4-flash` where configured; record the actual model/provider in telemetry and do not treat this preference as a core rule.
+- **Reference specification:** `/opt/data/projects/redesign/NEW_V5_design_specification.md`
+- **Domains:** `www.masaze-trebon.cz`, `www.thajskemasaze-trebon.cz`, `www.utrebonskemadony.cz`
 
-- **Isolate State Files:** Check if `.git/info/exclude` contains internal tracking patterns. If not, immediately append `.internal_master_plan.md`, `retry_context.json`, `devlog.md`, `handovers/`, and `learnings/` to `.git/info/exclude`. This ensures subagent workspace sweeps (`git add -A`) never see or commit internal state architecture.
-- Does a git repo exist at the project root? If not → escalate to user: "No git repo found. Initialize one before delegating."
-- Does a working environment exist (venv/node_modules/etc.)? If not → escalate: "No environment found. Set up the project before delegating."
-- Does `handovers/_relay_context_template.md` exist? If not → copy from `_bootstrap/_relay_context_template.md` and adjust to match the project.
-- Does `.git/info/exclude` exclude `handovers/` and `learnings/`? Handover reports and observations are Architect-side state — never committed.
+## Project structure
 
-## Core Principles
+- `thai/` — Thai massage site
+- `penzion/` — accommodation site
+- `masaze/` — classic massage/wellness site
+- `css/design-system.css` — shared design system
+- `js/main.js` — shared vanilla JavaScript
+- `fonts/` — self-hosted WOFF2 fonts
+- `img/` — photos and shared image assets
+- `nginx.conf`, `shared.conf`, `Dockerfile` — infrastructure
+- `handovers/`, `learnings/` — Architect-side state
 
-| # | Principle | Defined Once |
-|---|-----------|-------------|
-| 1 | **Self-contained relay** | Agent reads ONLY the assigned relay configuration. Never architecture plans or unlisted scope. |
-| 2 | **Verifiable proof** | Deliverables must strictly satisfy the Completion File Contract (Reference §A). |
-| 3 | **Independent validation** | Re-run test commands independently. Rely on shell exit codes, never on subagent text assertions. |
-| 4 | **Iteration loop** | Treat initial relays as hypotheses. Specs tighten iteratively via execution results. |
+## Local bootstrap guard
 
-## Phase 1: Plan — Assess + Master Plan
-
-### 1a. Classify the Requirement
-
-Evaluate task clarity to determine the configuration payload depth:
-
-| Clarity | Tier | Payload |
-|---------|------|---------|
-| **Loose** (Unsure of exact design, exploring) | **Minimal** | Goal, deliverables, test command, handover path |
-| **Medium** (Known feature scope, details fluid) | **Standard** | Minimal + constraints, shape contract, surprises checklist |
-| **Tight** (Stable spec, multi-relay execution) | **Full** | Standard + shared resource contract, stop conditions, agent pre-flight |
-
-**Decision Logic:** Loose → Minimal. Medium → Standard. Tight + ≥3 relays → Full. Tight + <3 relays → Standard.
-
-### 1b. Write the Master Plan
-
-Write or update `.internal_master_plan.md`. Never expose this planning layer to any subagent.
-
-```
-# Master Plan — {FEATURE_NAME}
-**Created:** {timestamp} | **Last updated:** {timestamp} | **Status:** {in_progress | completed}
-
-## Steps
-| ID | Tier | Description | Effort | Depends On | Status |
-|---|---|---|---|---|---|
-| STEP-01 | Standard | ... | 20m | — | pending |
-```
-
-Restrict task scale to ≤30 minutes per step. Split larger units immediately.
-If requirements shift mid-execution: pause the current loop step, rewrite the master plan, and resume.
-
-## Phase 2: Write the Relay — Direct Context
-
-Execute sequentially. Step N+1 remains locked until Step N satisfies all Phase 4 verification protocols.
-
-### 2a. Architect Pre-Flight
-
-Execute and verify the working tree health:
+Before delegating:
 
 ```bash
-git status
-ls <target-dirs>
-mkdir -p handovers/done handovers/archive
+cd /opt/data/projects/trebon-sites
+pwd
+git rev-parse --show-toplevel
+git status --short
 ```
 
-If `git status` displays dirty uncommitted code changes from prior feature sessions, resolve or commit them before delegating.
+The repository must exist and the working tree must be understood before a relay starts. Internal state must be excluded. The `img/` directory is intentionally currently untracked; do not stage it unless a relay explicitly names the required asset files.
 
-### 2b. Construct the `delegate_task` Context
+## Protected files
 
-**No JSON relay files.** All instructions go directly into `delegate_task`'s `goal` and `context` parameters. This eliminates the `execute_code` approval gate that triggers when subagents parse JSON from disk, and removes the round-trip file read latency (~5s observed in Phase A).
+Do not modify unless the relay explicitly names them:
 
-Start from `handovers/_relay_context_template.md` — the living, environment-tested baseline.
+- `AGENTS.md`
+- `CORE_PROTOCOL.md`
+- `.internal_master_plan.md`
+- `devlog.md`
+- `handovers/`
+- `learnings/`
+- `.git/`
+- `css/design-system.css`
+- `nginx.conf`
+- `shared.conf`
+- `Dockerfile`
+- `scripts/`
+- `fonts/`
+- `img/` as a directory; individual asset files require explicit target paths
 
-**`goal`** — one sentence: what the subagent must produce. Self-contained, no project shorthand.
+## Local boundaries
 
-**`context`** — structured Markdown covering:
+- **Allowed tools:** Python 3 stdlib, `git`, `curl`, `grep`, Hermes browser/console tools when available, and project-approved shell/process commands.
+- **Unavailable or forbidden in subagent tests:** npm packages, build frameworks, pip installation, apt installation, Fontsource CDN, and Docker recovery/install attempts.
+- **Tool replacements:** use Python stdlib for archive, byte, metadata, parsing, comparison, and file operations where the container lacks `xxd`, `od`, `unzip`, `file`, `jq`, `sed`, `awk`, `stat`, `diff`, `find`, `sort`, `head`, `tail`, `cut`, `tar`, or checksum tools. `od` is explicitly forbidden after the STEP-06 observation.
+- **Dependencies:** no npm, no pip, no apt, no React/Vue/Svelte, no CSS framework, no build step. Self-host WOFF2 fonts. Google WebFonts Helper API may be used only for an explicitly scoped font-download relay.
+- **Server policy:** Docker is unavailable in the subagent environment. Use `python3 -m http.server` for local runtime tests. Docker/VPS verification is Architect-side only when explicitly required.
+- **External resources:** pages should remain static and avoid undeclared external embeds/dependencies. Project-specific SEO and domain rules come from the referenced specification and the relay.
 
-```markdown
-**Project:** trebon-sites at /opt/data/projects/trebon-sites
-**Task ID:** STEP-NN
-**Profile:** thinking_type: disabled | enabled, reasoning_effort: null | high
+## Local testing adapter
 
-## Task
-[Self-contained description. What to create/modify. No "as discussed."]
+Every relay must include exact commands satisfying the core verification levels:
 
-## Target Files
-- `/opt/data/projects/trebon-sites/PATH` — create | modify
+1. **Structural:** Python/HTMLParser/regex or another runtime assertion over the output shape.
+2. **Negative:** explicitly test forbidden dependency, forbidden element, unlisted file mutation, or invalid state.
+3. **Runtime:** start `python3 -m http.server PORT --bind 127.0.0.1` via the terminal background process tool and check HTTP responses with `curl`.
+4. **Browser/DOM:** required for HTML/CSS/JS changes. Use `browser_navigate`, `browser_console`, JS error inspection, computed styles, DOM shape, image `naturalWidth`, and timing/state checks such as carousel rotation.
+5. **Visual screenshot:** optional. If `browser_vision` fails, do not retry the provider; fall back to browser console and DOM/property checks.
 
-## Constraints
-**Study:** [files to read for conventions]
-**Do NOT touch:** [list of protected files]
-**Boundaries:** [library limits — no npm, no frameworks, no pip, no apt]
+Additional local conventions:
 
-## Testing Methodology
-[Verbatim shell commands. Must include ≥1 negative test + ≥1 structural assertion.
- ALL hex/file/archive operations use Python stdlib, not xxd/od/unzip/file.
- Docker is UNAVAILABLE — use python3 -m http.server for web validation.]
+- CSS assertions must tolerate valid whitespace (`property.*value`, not only `property:value`).
+- Verification scripts belong under `/opt/data/`, not `/tmp/`.
+- Preserve complete raw test output in the handover.
+- For terminal-masked phone digits, verify the file bytes/content with Python rather than modifying correct digits.
+- Negative scans must include comments and markup when a banned string is forbidden; do not hide banned strings in comments.
+- FAQ or other verbatim copy contracts require exact string assertions, including `&nbsp;` and en dashes.
 
-## Stop Conditions
-[Explicit halt commands for known dead ends]
+## Local handover additions
 
-## Handover
-Write to: `handovers/done/completion-STEP-NN.md`
-Contract: 5 sections (§A): raw test output, git evidence, files table, surprises checklist (§B), contract enforcement.
+Use the core's exact five headings. In addition, report:
 
-## Commit
-Use the EOF pattern:
-```
-git commit -F - << 'EOF'
-STEP-NN: short description
-EOF
-```
-Avoid raw IPs/URLs in commit messages.
-```
+- browser/DOM checks for all UI or JS changes;
+- any intentionally untracked asset dependencies;
+- explicit staged file list before commit;
+- model/provider and thinking mode;
+- parallel delegation when used and its dependency rationale.
 
-### 2c. Execution Profile Selector
+## Local learning register
 
-Evaluate tactical complexity:
+Store observations in `learnings/`. Classify every observation as `core`, `adapter`, `project-specific`, or `historical`.
 
-- **`thinking_type: "disabled"`** — mechanical changes: boilerplate, templates, formatting.
-- **`thinking_type: "enabled"`, `reasoning_effort: "high"`** — complex logic: algorithms, state transforms, multi-file dependency flows.
+Current adapter learnings from Plausit and trebon-sites:
 
-## Phase 3: Delegate
+- direct context is the active delegation mechanism;
+- absolute paths and first-command `pwd`/repository-root verification are mandatory;
+- browser/DOM checks materially improve HTML/CSS/JS verification;
+- `browser_vision` is optional because the current provider may fail;
+- `img/` remains untracked until an explicit asset commit;
+- use explicit `git add` target paths only;
+- batch only independent steps with no shared target files;
+- `deepseek-v4-flash` was stronger than PRO in the measured visual Phase B run, but this remains telemetry/adapter evidence, not a universal core rule.
 
-Invoke via `delegate_task` with the structured `goal` + `context` from Phase 2b:
+Only genuinely project-agnostic observations may be proposed for propagation into `CORE_PROTOCOL.md`.
 
-**goal:** "TASK_ID: one-sentence deliverable description. Verify with testing methodology. Handover to handovers/done/completion-TASK_ID.md."
+## Operating rule
 
-**context:** [The full Markdown context block from Phase 2b — task, targets, constraints, tests, stops, handover contract.]
+`CORE_PROTOCOL.md` defines the orchestration lifecycle, evidence gates, retry behavior, git safety, and learning lifecycle. This adapter defines trebon-sites. If they conflict, stop and resolve the ambiguity before delegation.
 
-Batch independent steps (no shared targets) as a `tasks` array. Steps with dependencies run sequentially.
+See also: `handovers/_relay_context_template.md`, `.internal_master_plan.md`, `devlog.md`, and the referenced design specification.
+ಮು
 
-## Phase 4: Verify
+## Migration note
 
-### 4a. Audit the Handover File — verify all 5 sections:
-1. **Raw Test Output** — complete terminal dump (summaries → FAIL)
-2. **Git Evidence** — `git log --oneline -1` + `git diff HEAD~1 --stat`
-3. **Files Table** — cross-check against git diff metrics
-4. **Surprises Checklist** — fully checked, undocumented mutations → FAIL
-5. **Contract Enforcement** — negative case + shape assertions confirmed
+This project was migrated from the v5 trebon-sites protocol to v6. Historical handovers and learnings retain their original protocol labels; they are evidence, not rewritten history.
 
-### 4b. Independent Re-Execution
-Re-run `testing_methodology` yourself. Validate exit code 0 and output matches subagent claims.
+## Adapter review status
 
-### 4c. Gate Decision Matrix
-First matched criterion governs:
-
-| Gate | Condition | Action |
-|------|-----------|--------|
-| **Fabrication** | Logs contradict reality or cannot be reproduced | Escalate to user, stop loop |
-| **Stagnation** | Same error signature as previous iteration | Hard break, log to retry_context.json, escalate |
-| **Spec Drift** | Test fails due to config/path mismatch | Context pruning, refine payload, re-delegate |
-| **Execution Error** | Re-execution passes but metadata missing/corrupt | Log, re-delegate. 2 consecutive → escalate |
-| **Validation Cleared** | All metrics match, no surprises | ✅ PASS — update master plan, archive, advance |
-| **Incomplete Metadata** | Tests pass but report malformed | Re-delegate with compliance instructions |
-
-### 4d. Retry Guard
-- Max 3 cycles per step. Context pruning before retry N+1.
-- Upstream impediments → terminate immediately. Do not exhaust retry budget.
-
-### 4e. Post-Mortem
-Review discoveries, tighten subsequent step payloads.
-
-### 4f. Workspace Stabilization
-`git status` — confirm clean before next relay.
-
----
-
-## Reference §A: Completion File Contract
-
-- **Raw Test Output:** Complete shell execution logs
-- **Git Evidence:** `git log --oneline -1` and `git diff HEAD~1 --stat`
-- **Files Changed:** `| File Path | Action | Lines Added | Lines Deleted |`
-- **Surprises Checklist:** Completed metrics from §B
-
-## Reference §B: Surprises Checklist
-
-- [ ] Did every command succeed on first attempt?
-- [ ] Did you read anything outside this relay file?
-- [ ] Did any test need adjustment beyond what the relay specified?
-- [ ] Did you modify any file NOT in target_files?
-- [ ] Did you add any dependency not in constraints?
-
-## Reference §C: Internal Workspace Layout
-
-```
-{project_root}/handovers/_relay_context_template.md      ← Current best context template (Markdown)
-{project_root}/handovers/done/completion-{TASK_ID}.md    ← Subagent verification report
-{project_root}/handovers/archive/                        ← Archived historical context
-{project_root}/learnings/{TASK_ID}-agent-loop-observations.md ← Per-step analysis
-{project_root}/.internal_master_plan.md                  ← Architect-only plan
-{project_root}/devlog.md                                 ← Subagent activity log
-{project_root}/scripts/validate-nginx.py                 ← Nginx config structural validator
-```
-
-## Reference §D: Python Stdlib Mandate
-
-The subagent container lacks common shell tools (`xxd`, `od`, `unzip`, `file`, `jq`, `sed`, `awk`, `stat`, `md5sum`, `diff`, `find`, `sort`, `head`, `tail`, `cut`, `tar`, `gzip`). Python 3 stdlib covers all of them. **All testing methodology and verification commands must use Python, not shell tools.**
-
-| Shell tool | Python replacement |
-|---|---|
-| `xxd`, `od`, `hexdump` | `open(f,'rb').read(N).hex()` |
-| `unzip` | `zipfile.ZipFile(f).extractall()` |
-| `file` (type detection) | `open(f,'rb').read(4)` — magic bytes |
-| `jq` (JSON queries) | `json.load(open(f))` |
-| `sed`, `awk` (text processing) | `re.sub()`, `str.replace()`, `split()` |
-| `wc -l/-c` (line/byte counts) | `len(open(f).readlines())`, `os.path.getsize()` |
-| `stat`, `ls -l` (file metadata) | `os.stat()`, `os.path.getsize()` |
-| `md5sum`, `sha256sum` (checksums) | `hashlib.md5()`, `hashlib.sha256()` |
-| `diff` (file comparison) | `difflib.unified_diff()` |
-| `find` (file search) | `os.walk()`, `glob.glob()` |
-| `sort`, `uniq` | `sorted()`, `set()` |
-| `head -N`, `tail -N` | `lines[:N]`, `lines[-N:]` |
-| `tar`, `gzip`, `bzip2` | `tarfile`, `gzip`, `bz2` |
-| `grep` (pattern matching) | `re.search()` (prefer `search_files` tool or `grep` via terminal — grep IS available) |
-
-**Rule in testing methodology:** never write `xxd`, `od`, `unzip`, or `file` in test commands. Always use the Python equivalent. This eliminates 3 dead-end recovery patterns observed in Phase A (STEP-01: `xxd`→`od`, `unzip`→`zipfile`; STEP-03: `file`→`magic bytes`).
+- Migration source: GitHub template `jiri-cermak/agentic_dev_template`, v6 commit `380eae4`.
+- Migration scope: core separation, explicit local adapter, verification taxonomy, learning classification, CWD protection, and staging safety.
+- No feature files or completed historical handovers were changed by this migration.
