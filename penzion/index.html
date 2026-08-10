@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="cs" data-site="penzion">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Penzion U Třeboňské madony — ubytování v centru Třeboně | utrebonskemadony.cz</title>
+  <meta name="description" content="Rodinný penzion U Třeboňské madony v historickém centru Třeboně — 6 pokojů, wellness a 10% sleva na masáže. Rezervace: +420 737 538 818.">
+  <link rel="stylesheet" href="/css/design-system.css">
+
+  <!-- ============================================================
+       STEP-08 page layout — penzion homepage (gradient hero, room
+       card grid, footer columns, spacing). Design tokens + components
+       come from /css/design-system.css; page layout lives here.
+       ============================================================ -->
+  <style>
+    /* --- Header --- */
+    .site-header {
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .header-inner {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+    }
+    .header-title {
+      font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700;
+      color: var(--domain-primary); margin: 0; line-height: 1.2;
+    }
+    .header-title span { color: var(--domain-secondary); }
+    .header-tagline {
+      margin: 2px 0 0; font-size: 0.85rem; color: var(--color-text-muted);
+    }
+
+    /* --- Hero (CSS gradient until penzion photos exist) --- */
+    .hero {
+      position: relative; overflow: hidden;
+      height: clamp(340px, 55vh, 580px);
+      background: linear-gradient(155deg, var(--domain-primary-hover) 0%, var(--domain-primary) 55%, var(--domain-secondary) 145%);
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; color: var(--color-white);
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.45) 100%);
+      padding: 24px;
+    }
+    .hero-overlay h1 {
+      color: var(--color-white); margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+    }
+    .hero-subtitle {
+      margin: 0 0 22px; font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+      letter-spacing: 0.02em; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+    }
+
+    /* --- Sections --- */
+    .section { padding: 40px 0; }
+    .section + .section { padding-top: 0; }
+    .section h2 { color: var(--domain-primary); margin: 0 0 6px; font-size: 1.7rem; }
+    .section-sub { color: var(--color-text-muted); margin: 0 0 26px; max-width: 720px; }
+    .lead {
+      font-family: var(--font-heading); font-size: 1.2rem;
+      color: var(--color-text-dark); max-width: 760px; margin: 0 0 10px;
+    }
+    .intro p { color: var(--color-text-muted); max-width: 760px; margin: 0 0 8px; }
+
+    /* --- Shared room amenities --- */
+    .amenities-lead { font-weight: 600; margin: 0 0 8px; color: var(--color-text-dark); }
+    .amenities-list { margin: 0 0 28px; padding-left: 18px; color: var(--color-text-muted); }
+    .amenities-list li { margin-bottom: 4px; }
+
+    /* --- Room card grid --- */
+    .card-grid {
+      display: grid; grid-template-columns: 1fr; gap: 20px;
+    }
+    @media (min-width: 640px)  { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 992px)  { .card-grid { grid-template-columns: repeat(3, 1fr); } }
+    .card h3 { font-size: 1.12rem; margin: 0 0 8px; }
+    .room-beds {
+      font-size: 0.9rem; font-weight: 600; color: var(--domain-primary);
+      margin: 0 0 8px;
+    }
+    .card .card-desc { color: var(--color-text-muted); font-size: 0.95rem; margin: 0 0 14px; }
+    .room-price {
+      margin: 0; font-family: var(--font-heading); font-size: 1.15rem;
+      font-weight: 700; color: var(--domain-primary);
+    }
+    .room-price span {
+      font-family: var(--font-body); font-size: 0.85rem; font-weight: 400;
+      color: var(--color-text-muted);
+    }
+
+    /* --- Availability teaser --- */
+    .availability-cta { margin-top: 4px; }
+
+    /* --- Footer --- */
+    .site-footer {
+      background: var(--color-text-dark); color: #E8E2D5;
+      margin-top: 64px; padding: 44px 0 28px;
+    }
+    .site-footer h3 { color: var(--color-white); font-size: 1.05rem; margin: 0 0 14px; }
+    .site-footer ul { list-style: none; margin: 0; padding: 0; }
+    .site-footer li { padding: 5px 0; font-size: 0.95rem; }
+    .site-footer a { color: #D8CEBD; text-decoration: none; }
+    .site-footer a:hover { color: var(--color-white); text-decoration: underline; }
+    .footer-grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+    @media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      margin-top: 28px; padding-top: 16px;
+      font-size: 0.85rem; color: #B9AFA0;
+    }
+  </style>
+
+  <script src="/js/main.js" defer></script>
+</head>
+<body>
+
+  <!-- Synergy strip (Section 6.1) -->
+  <nav class="synergy-bar" aria-label="Sesterské weby">
+    <div class="container synergy-container">
+      <span class="synergy-brand">Třeboň · ubytování a wellness</span>
+      <div class="synergy-links">
+        <a class="synergy-link is-active" href="https://utrebonskemadony.cz" aria-current="page">Penzion U Třeboňské madony</a>
+        <a class="synergy-link" href="https://thajskemasaze-trebon.cz">Thajské masáže Třeboň</a>
+        <a class="synergy-link" href="https://masaze-trebon.cz">Masáže Třeboň</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div>
+        <p class="header-title">Penzion <span>U Třeboňské madony</span></p>
+        <p class="header-tagline">Rodinný penzion v historickém centru Třeboně</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero (gradient until penzion photos are available) -->
+  <section class="hero" aria-label="Úvodní prezentace">
+    <div class="hero-overlay">
+      <h1>Penzion U Třeboňské madony</h1>
+      <p class="hero-subtitle">Ubytování v srdci historické Třeboně</p>
+      <a class="btn btn-primary hero-cta" href="/penzion/rezervace/">Rezervovat pobyt</a>
+    </div>
+  </section>
+
+  <main class="page-wrapper">
+
+    <!-- Intro -->
+    <section class="section intro">
+      <div class="container">
+        <p class="lead">Rodinný penzion přímo v historickém centru Třeboně.</p>
+        <p>Penzion U Třeboňské madony sídlí v historické budově v samém srdci Třeboně a vede ho rodina, která se o své hosty stará osobně. Nabízíme šest útulných pokojů, přístup do wellness a 10% slevu na masáže v našich sesterských provozovnách — Thajské masáže Třeboň a Masáže Třeboň.</p>
+      </div>
+    </section>
+
+    <!-- Rooms -->
+    <section class="section" id="pokoje">
+      <div class="container">
+        <h2>Naše pokoje</h2>
+        <p class="section-sub">Šest pokojů v různých velikostech a kategoriích — od cenově dostupných dvoulůžkových pokojů až po prostorný apartmán pro rodinné pobyty.</p>
+
+        <!-- TEMPORARY TEXT — will be polished later -->
+        <p class="amenities-lead">Všechny pokoje nabízí:</p>
+        <ul class="amenities-list">
+          <li>dubové postele se zdravotními matracemi</li>
+          <li>TV s plochou obrazovkou</li>
+          <li>klimatizaci</li>
+          <li>vlastní koupelnu s WC</li>
+          <li>Wi-Fi zdarma</li>
+        </ul>
+
+        <div class="card-grid">
+          <article class="card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">Apartmán</span></div>
+              <h3>Apartmán 2+kk</h3>
+              <p class="room-beds">4 lůžka · vlastní kuchyň</p>
+              <p class="card-desc">Prostorný apartmán s plně vybavenou kuchyňskou linkou — ideální pro rodinné pobyty</p>
+              <p class="room-price">od XXX Kč <span>/ noc</span></p>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-body">
+              <h3>Pokoj 2</h3>
+              <p class="room-beds">Manželská postel</p>
+              <p class="card-desc">Standardní dvoulůžkový pokoj, menší varianta</p>
+              <p class="room-price">od XXX Kč <span>/ noc</span></p>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-body">
+              <h3>Pokoj 3</h3>
+              <p class="room-beds">Manželská postel</p>
+              <p class="card-desc">Standardní dvoulůžkový pokoj, prostornější varianta</p>
+              <p class="room-price">od XXX Kč <span>/ noc</span></p>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-body">
+              <h3>Pokoj 4</h3>
+              <p class="room-beds">2× samostatná postel</p>
+              <p class="card-desc">Cenově nejdostupnější dvoulůžkový pokoj</p>
+              <p class="room-price">od XXX Kč <span>/ noc</span></p>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">Deluxe</span></div>
+              <h3>Pokoj 5</h3>
+              <p class="room-beds">2× samostatná postel</p>
+              <p class="card-desc">Nadstandardně vybavený pokoj kategorie Deluxe</p>
+              <p class="room-price">od XXX Kč <span>/ noc</span></p>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-body">
+              <div class="badge-wrapper"><span class="badge badge-secondary">Deluxe</span></div>
+              <h3>Pokoj 6</h3>
+              <p class="room-beds">Manželská postel (king)</p>
+              <p class="card-desc">Nejprostornější dvoulůžkový pokoj s king manželskou postelí</p>
+              <p class="room-price">od XXX Kč <span>/ noc</span></p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Availability teaser -->
+    <section class="section" id="dostupnost">
+      <div class="container">
+        <h2>Dostupnost</h2>
+        <p class="section-sub">Penzion je otevřen celoročně — ať přijedete za rybníky, na kolo nebo jen tak na víkend, rádi vás u nás ubytujeme. Volné termíny vám potvrdíme telefonicky nebo e-mailem.</p>
+        <a class="btn btn-primary availability-cta" href="/penzion/rezervace/">Ověřit dostupnost a rezervovat</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Kontakt</h3>
+          <ul>
+            <li>📞 <a href="tel:+420737538818">+420 737 538 818</a></li>
+            <li>✉️ <a href="mailto:penzionutrebonskemadony@gmail.com">penzionutrebonskemadony@gmail.com</a></li>
+            <li>📍 Husova 68, 379 01 Třeboň</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Provozní doba</h3>
+          <ul>
+            <li>🕐 Po–So 9–20</li>
+            <li>Pondělí–sobota od 9 do 20 hodin</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        🏢 Penzion U Třeboňské madony, s.r.o. · IČ 09787780
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
