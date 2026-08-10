@@ -16,19 +16,23 @@
   <style>
     /* --- Header --- */
     .site-header {
-      background: var(--thai-primary);
-      border-bottom: 2px solid var(--thai-primary-hover);
+      position: absolute;
+      top: 0; left: 0; right: 0; z-index: 10;
+      background-color: rgba(139, 18, 62, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.35);
     }
     .header-inner {
       display: flex; align-items: center; gap: 14px;
       padding: 14px 16px;
     }
-    .header-logo { width: 52px; height: 52px; flex-shrink: 0; }
+    .header-logo { width: 52px; height: 52px; flex-shrink: 0; filter: brightness(0) invert(1); }
     .header-title {
       font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700;
       color: var(--color-white); margin: 0; line-height: 1.2;
     }
-    .header-title span { color: var(--domain-secondary); }
+    .header-title span { color: var(--color-white); }
     .header-tagline {
       margin: 2px 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.7);
     }
@@ -36,6 +40,7 @@
     /* --- Hero carousel --- */
     .hero {
       position: relative; overflow: hidden;
+      padding-top: 72px;
       height: clamp(340px, 62vh, 580px);
       background: var(--color-text-dark);
     }
@@ -114,9 +119,20 @@
     }
     .price-note { font-size: 0.85rem; color: var(--color-text-muted); margin-top: 10px; }
 
+    /* Compact price table overrides */
+    .price-card .card-body {
+      padding: 12px 20px;
+    }
+    .price-table td {
+      padding: 8px 12px;
+    }
+
     /* --- Footer --- */
+    .page-wrapper {
+      padding-bottom: 0;
+    }
     .site-footer {
-      background: var(--color-text-dark); color: #E8E2D5;
+      background: var(--thai-primary-hover); color: #E8E2D5;
       margin-top: 24px; padding: 44px 0 28px;
     }
     .site-footer h3 { color: var(--color-white); font-size: 1.05rem; margin: 0 0 14px; }
@@ -168,19 +184,20 @@
     </div>
   </nav>
 
-  <!-- Header -->
-  <header class="site-header">
-    <div class="container header-inner">
-      <img src="/img/garuda.png" alt="Thajské masáže Třeboň" class="header-logo">
-      <div>
-        <p class="header-title">Thajské masáže <span>Třeboň</span></p>
-        <p class="header-tagline">Tradiční thajské procedury v srdci jižních Čech</p>
-      </div>
-    </div>
-  </header>
-
   <!-- Hero carousel (8s interval, cross-fade — see /js/main.js) -->
   <section class="hero" aria-label="Úvodní prezentace">
+
+    <!-- Header (overlay on hero) -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <img src="/img/garuda.png" alt="Thajské masáže Třeboň" class="header-logo">
+        <div>
+          <p class="header-title">Thajské masáže <span>Třeboň</span></p>
+          <p class="header-tagline">Tradiční thajské procedury v srdci jižních Čech</p>
+        </div>
+      </div>
+    </header>
+
     <div class="hero-slides" id="heroSlides" aria-roledescription="karusel">
       <figure class="hero-slide is-active">
         <img src="/img/photos/medium/209_medium.jpg" alt="Tradiční thajská masáž v Třeboni">
