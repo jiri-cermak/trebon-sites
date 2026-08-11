@@ -120,7 +120,7 @@
 
   /* Override shared neutrals for dark theme */
   --color-white: #2A2326;
-  --color-border-light: #4A3A42;
+  --color-border-light: #5A4A52;
   --color-border-dark: #5A4A52;
   --color-error-bg: #3D1F2A;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -423,4 +423,8 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
 [data-site="thai"] .callout-contraindication {
   background: var(--color-error-bg);
   border-color: #5A2A3A;
+}
+[data-site="thai"] .card {
+  border: 1px solid #6B5A62;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
