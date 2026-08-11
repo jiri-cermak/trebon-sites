@@ -98,11 +98,31 @@
   --domain-border: var(--penzion-border);
 }
 [data-site="thai"] {
+  /* Dark base — warm charcoal, not pure black */
+  --color-bg-main: #1A1618;           /* Deep warm charcoal */
+  --color-text-dark: #E8E2D5;         /* Warm cream for body text */
+  --color-text-muted: #A69E93;        /* Muted warm gray */
+
+  /* Adjusted Thai palette for dark backgrounds */
+  --thai-primary: #C41E5A;            /* Brighter ruby (light theme: #8B123E) */
+  --thai-primary-hover: #E02E6E;
+  --thai-secondary: #D4AF37;          /* Gold — now fully usable on dark */
+  --thai-accent-subtle: #8B4A6B;      /* Lighter orchid */
+  --thai-card-bg: #2A2326;            /* Dark card background */
+  --thai-border: #4A3A42;             /* Visible border on dark */
+
+  /* Aliases */
   --domain-primary: var(--thai-primary);
   --domain-primary-hover: var(--thai-primary-hover);
   --domain-secondary: var(--thai-secondary);
   --domain-card-bg: var(--thai-card-bg);
   --domain-border: var(--thai-border);
+
+  /* Fix: synergy bar must stay dark on dark theme */
+  /* design-system.css uses var(--color-text-dark) as synergy-bar BG, */
+  /* which would become cream on dark theme. Override: */
+  --synergy-bar-bg: #0D0A0C;          /* Near-black, darker than main bg */
+  --synergy-bar-text: #A69E93;
 }
 [data-site="masaze"] {
   --domain-primary: var(--masaze-primary);
@@ -372,3 +392,19 @@ body {
   line-height: 1.5;
 }
 h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
+
+/* --- 11. Dark theme synergy bar fix (STEP-04-DARK) --- */
+/* Base .synergy-bar uses var(--color-text-dark) as background, which the
+   thai dark theme redefines as cream. Scoped overrides keep the bar
+   near-black on thai only; light sites are unaffected. */
+[data-site="thai"] .synergy-bar {
+  background-color: var(--synergy-bar-bg);
+  color: var(--synergy-bar-text);
+}
+[data-site="thai"] .synergy-link {
+  color: var(--synergy-bar-text);
+}
+[data-site="thai"] .synergy-link:hover,
+[data-site="thai"] .synergy-link.is-active {
+  color: var(--color-white);
+}
