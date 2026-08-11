@@ -118,9 +118,15 @@
   --domain-card-bg: var(--thai-card-bg);
   --domain-border: var(--thai-border);
 
-  /* Fix: synergy bar must stay dark on dark theme */
-  /* design-system.css uses var(--color-text-dark) as synergy-bar BG, */
-  /* which would become cream on dark theme. Override: */
+  /* Override shared neutrals for dark theme */
+  --color-white: #2A2326;
+  --color-border-light: #4A3A42;
+  --color-border-dark: #5A4A52;
+  --color-error-bg: #3D1F2A;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+
   --synergy-bar-bg: #0D0A0C;          /* Near-black, darker than main bg */
   --synergy-bar-text: #A69E93;
 }
@@ -407,4 +413,14 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
 [data-site="thai"] .synergy-link:hover,
 [data-site="thai"] .synergy-link.is-active {
   color: var(--color-white);
+}
+
+/* Dark theme safety callout overrides */
+[data-site="thai"] .callout-indication {
+  background: #1A2E22;
+  border-color: #2D4A38;
+}
+[data-site="thai"] .callout-contraindication {
+  background: var(--color-error-bg);
+  border-color: #5A2A3A;
 }
