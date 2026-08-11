@@ -63,7 +63,7 @@ trebon-sites/
 │   └── archive/
 ├── learnings/                 # Per-step subagent observations
 ├── CORE_PROTOCOL.md           # Project-agnostic Tiered Relay Architecture v6 core
-├── AGENTS.md                  # trebon-sites v6 project adapter
+├── .agents.md                 # trebon-sites v6 project adapter (dotfile — not auto-discovered)
 ├── .internal_master_plan.md   # Architect-only plan (gitignored)
 └── devlog.md                  # Subagent activity log (gitignored)
 ```
@@ -80,7 +80,7 @@ This project uses **Tiered Relay Architecture v6**: a project-agnostic core plus
 
 Core protocol: [`CORE_PROTOCOL.md`](CORE_PROTOCOL.md)
 
-Project adapter: [`AGENTS.md`](AGENTS.md)
+Project adapter: [`.agents.md`](.agents.md)
 
 ## Design System
 
