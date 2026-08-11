@@ -36,6 +36,8 @@ git status --short
 
 The repository must exist and the working tree must be understood before a relay starts. Internal state must be excluded. The `img/` directory is intentionally currently untracked; do not stage it unless a relay explicitly names the required asset files.
 
+**Skill isolation:** Every `delegate_task` call MUST set `workdir="/opt/data"`. The runtime auto-detects `AGENTS.md` from the project root and injects it as a virtual skill (`trebon-sites-monorepo`). Setting `workdir` outside the project prevents this injection — the relay context is the subagent's sole source of rules. All paths in the relay context are absolute, so the subagent doesn't need to be in the project directory.
+
 ## Protected files
 
 Do not modify unless the relay explicitly names them:
