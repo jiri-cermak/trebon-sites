@@ -428,3 +428,14 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
   border: 1px solid #6B5A62;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
+
+/* --- Thai dark theme: text-on-colored-surface fixes --- */
+[data-site="thai"] .btn-primary {
+  color: #E8E2D5;  /* Warm cream, not the overridden --color-white */
+}
+[data-site="thai"] .badge-primary {
+  color: #E8E2D5;
+}
+[data-site="thai"] .avatar-circle {
+  color: #E8E2D5;
+}
