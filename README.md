@@ -18,7 +18,7 @@ Monorepo for three Třeboň wellness/wellness websites: masáže, thajské masá
 - **Booking:** Previo REST API via nginx reverse proxy (Phase 2), Previó iframe embed (Phase 1)
 - **Languages:** CZ / EN / DE per site
 - **SEO:** Schema.org JSON-LD, hreflang tags, llms.txt
-- **Design:** `data-site` attribute drives per-domain color theming (Section 2.3 of V5 spec)
+- **Design:** `data-site` attribute drives per-domain color theming (Section 2.3 of V7 spec)
 
 ## Architecture
 
@@ -41,7 +41,7 @@ trebon-sites/
 ├── penzion/                   # utrebonskemadony.cz — Boutique Hotel
 │   └── ...                    # same structure as masaze + pokoje/ + season matrix
 ├── css/
-│   └── design-system.css      # single source of truth (Sections 2–8 of V5 spec)
+│   └── design-system.css      # single source of truth (Sections 2–8 of V7 spec)
 ├── js/
 │   ├── i18n.js                # translation dictionary
 │   ├── availability.js        # Previo API client (penzion)
@@ -84,7 +84,7 @@ Project adapter: [`.agents.md`](.agents.md)
 
 ## Design System
 
-See `/opt/data/projects/redesign/NEW_V5_design_specification.md` for the full 1809-line spec covering:
+See `/opt/data/projects/redesign/NEW_V7_design_specification.md` for the full 1924-line spec covering:
 - Design tokens & CSS custom properties with `data-site` per-domain theming
 - UI component library (cards, price tables, accordion, forms, testimonials)
 - Responsive layout (desktop sidebar → tablet card → mobile slide-up sheet)
